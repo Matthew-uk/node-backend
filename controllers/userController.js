@@ -2,6 +2,8 @@ const jwt = require("jsonwebtoken");
 const userModel = require("./../models/userModel");
 const bcrypt = require("bcrypt");
 const asyncHandler = require("express-async-handler");
+const multer = require("multer");
+const path = require("path");
 
 const getUsers = asyncHandler(async (req, res) => {
   const { fullName, email } = await req.user;
@@ -111,6 +113,18 @@ const getAllUsers = asyncHandler(async (req, res) => {
   }
 });
 
+const imgUpload = asyncHandler(async (req, res) => {
+  const storage = multer.diskStorage({
+    destination: (req, file, cb) => {
+      cb(null, "./images");
+    },
+    filename: (req, file, cb) => {
+      const ext = path.extname(file.originalname);
+      cb(null, `${file.fieldname}-${Date.now()}${ext}`);
+    },
+  });
+});
+
 const generateJwtToken = (id) => {
   const token = jwt.sign({ id }, process.env.SECRET, {
     expiresIn: "1d",
@@ -118,4 +132,4 @@ const generateJwtToken = (id) => {
   return token;
 };
 
-module.exports = { createUsers, loginUsers, getUsers, getAllUsers };
+module.exports = { createUsers, loginUsers, getUsers, getAllUsers, imgUpload };
