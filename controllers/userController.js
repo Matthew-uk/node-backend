@@ -92,7 +92,7 @@ const loginUsers = asyncHandler(async (req, res) => {
 
 const getAllUsers = asyncHandler(async (req, res) => {
   try {
-    const users = await userModel.find();
+    const users = await userModel.find().exec();
     if (users) {
       res.status(200).json({
         users,
