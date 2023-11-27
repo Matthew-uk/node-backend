@@ -29,10 +29,13 @@ const { userRouter, notesRouter } = require("./routers/userRouter.js");
 const cors = require("cors");
 
 const app = express();
-mongoose.connect("mongodb://localhost:27017/NotePad", {
-  useNewUrlParser: true,
-  useUnifiedTopology: true,
-});
+mongoose.connect(
+  "mongodb+srv://next-ecommerce:Nedlog2g1.@cluster0.wh12aw7.mongodb.net/",
+  {
+    useNewUrlParser: true,
+    useUnifiedTopology: true,
+  }
+);
 dotenv.config();
 
 app.use(express.json());
