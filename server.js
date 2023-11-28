@@ -1,27 +1,4 @@
-// const express = require("express");
-// const mongoose = require("mongoose");
-// const cors = require("cors");
-// const dotenv = require("dotenv").config();
-// const app = express();
-// const userRouter = require("./routers/userRouter");
-// const userModel = require("./models/userModel");
-// const goalRouter = require("./routers/goalRouter");
-
-// app.use(express.json());
-// app.use(cors());
-// app.use("/api/users", userRouter);
-// app.use("/api/goals", goalRouter);
-
-// mongoose.connect("mongodb://localhost:27017/NotePad", {
-//   useNewUrlParser: true,
-//   useUnifiedTopology: true,
-// });
-
-// const PORT = process.env.PORT || 8082;
-// app.listen(PORT, () => {
-//   console.log(`App running on port ${PORT}`);
-// });
-
+// Import necessary modules
 const express = require("express");
 const dotenv = require("dotenv");
 const mongoose = require("mongoose");
@@ -30,59 +7,115 @@ const cors = require("cors");
 const multer = require("multer");
 const path = require("path");
 
+// Create an Express app
 const app = express();
-mongoose.connect(
-  "mongodb+srv://next-ecommerce:Nedlog2g1.@cluster0.wh12aw7.mongodb.net/",
-  {
-    useNewUrlParser: true,
-    useUnifiedTopology: true,
-  }
-);
+
+// Load environment variables from .env file
 dotenv.config();
 
+// Connect to MongoDB
+mongoose.connect(process.env.MONGODB_URI, {
+  useNewUrlParser: true,
+  useUnifiedTopology: true,
+});
+
+// Middleware to parse JSON in request bodies
 app.use(express.json());
+
+// Enable Cross-Origin Resource Sharing (CORS)
 app.use(cors());
 
+// Define routes for user and notes
 app.use("/api/users", userRouter);
 app.use("/api/notes", notesRouter);
 
-// Set up multer storage
-const storage = multer.diskStorage({
-  destination: path.join(__dirname, "uploads"), // Use path.join to get the absolute path
-  filename: function (req, file, cb) {
-    cb(
-      null,
-      file.fieldname + "-" + Date.now() + path.extname(file.originalname)
-    );
-  },
-});
+// Set up multer storage for file uploads
+// const storage = multer.diskStorage({
+//   destination: path.join(__dirname, "uploads"),
+//   filename: function (req, file, cb) {
+//     cb(
+//       null,
+//       file.fieldname + "-" + Date.now() + path.extname(file.originalname)
+//     );
+//   },
+// });
 
-const upload = multer({ storage: storage });
+// const upload = multer({ storage: storage });
 
-// Serve uploaded images
-const imgPath = path.join(__dirname, "uploads");
+// Serve uploaded images statically
 app.use("/api/uploads", express.static(path.join(__dirname, "uploads")));
 
-// Handle image upload
-app.post("/api/upload", upload.single("image"), (req, res) => {
+// Initialize Firebase Admin SDK
+const admin = require("firebase-admin");
+const serviceAccount = require("./firebase.json"); // Replace with your Firebase service account key
+admin.initializeApp({
+  credential: admin.credential.cert(serviceAccount),
+  storageBucket: "next-ecommerce-404013.appspot.com", // Replace with your Firebase Storage bucket name
+});
+
+const bucket = admin.storage().bucket();
+
+// Set up multer storage for file uploads
+const storage = multer.memoryStorage();
+const upload = multer({ storage: storage });
+
+// Define a route for image upload
+app.post("/api/upload", upload.single("image"), async (req, res) => {
   try {
-    // Get the filename of the uploaded image
-    const filename = req.file.filename;
+    // Get the file buffer and file name
+    const fileBuffer = req.file.buffer;
+    const fileName = req.file.originalname;
 
-    // Construct the URL based on the server and file structure
-    const imageUrl = `${process.env.PORT}/api/uploads/${filename}`; // Adjust the URL accordingly
+    // Create a reference to the Firebase Storage file
+    const file = bucket.file(`uploads/${fileName}`);
 
-    // Send the URL back to the user
-    res.json({
-      success: true,
-      message: "Image uploaded successfully",
-      imageUrl,
+    // Create a writable stream and upload the file
+    const stream = file.createWriteStream({
+      metadata: {
+        contentType: req.file.mimetype,
+      },
+      resumable: false,
     });
+
+    stream.on("error", (err) => {
+      console.error("Error uploading to Firebase Storage:", err);
+      res.status(500).json({ success: false, error: "Error uploading image" });
+    });
+
+    stream.on("finish", async () => {
+      // Fetch the uploaded file metadata to get the correct size
+      const [metadata] = await file.getMetadata();
+
+      // Construct the Firebase Storage URL
+      const imageUrl = `https://storage.googleapis.com/${bucket.name}/${file.name}`;
+
+      const expirationTimeInMilliseconds = 5 * 365 * 24 * 60 * 60 * 1000; // 2 years in milliseconds
+
+      const [signedUrl] = await file.getSignedUrl({
+        action: "read",
+        expires: Date.now() + expirationTimeInMilliseconds,
+      });
+
+      // Send the URL and file size back to the user
+      res.json({
+        success: true,
+        message: "Image uploaded successfully",
+        imageUrl,
+        fileSize: metadata.size,
+        signedUrl,
+      });
+    });
+
+    // Write the file buffer to the stream
+    stream.end(fileBuffer);
   } catch (error) {
+    console.error("Error uploading image:", error);
     res.status(500).json({ success: false, error: "Error uploading image" });
   }
 });
 
-app.listen(process.env.PORT || 3001, () => {
-  console.log("Express app running on port", process.env.PORT);
+// Start the Express app on the specified port
+const PORT = process.env.PORT || 3001;
+app.listen(PORT, () => {
+  console.log("Express app running on port", PORT);
 });
