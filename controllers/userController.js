@@ -6,11 +6,13 @@ const multer = require("multer");
 const path = require("path");
 
 const getUsers = asyncHandler(async (req, res) => {
-  const { fullName, email } = await req.user;
+  const { fullName, email, balance, referralCode } = await req.user;
   try {
     res.status(200).json({
       fullName,
       email,
+      balance,
+      referralCode,
     });
   } catch (error) {
     res.status(404).json(error.message);
