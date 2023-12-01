@@ -19,7 +19,7 @@ const getUsers = asyncHandler(async (req, res) => {
 
 const createUsers = async (req, res) => {
   try {
-    const { fullName, email, password, referralCode } = await req.body;
+    const { fullName, email, password, referer } = await req.body;
     const salt = await bcrypt.genSalt();
     const hashedPassword = await bcrypt.hash(password, salt);
     const userExists = await userModel.findOne({ email });
@@ -32,7 +32,7 @@ const createUsers = async (req, res) => {
             fullName,
             email,
             password: hashedPassword,
-            referralCode: referralCode ? referralCode : "",
+            referer: referer ? referer : "",
           });
           const token = generateJwtToken(newUser.id);
           res.status(201).json({

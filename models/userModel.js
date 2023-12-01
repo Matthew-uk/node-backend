@@ -32,6 +32,13 @@ const userSchema = mongoose.Schema(
     referralCode: {
       type: String,
     },
+    balance: {
+      type: Number,
+      default: 0,
+    },
+    referer: {
+      type: String,
+    },
   },
   { timestamps: true }
 );
