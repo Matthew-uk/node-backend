@@ -19,41 +19,81 @@ const getUsers = asyncHandler(async (req, res) => {
   }
 });
 
+const addBalance = async (userId, amount) => {
+  try {
+    const user = await userModel.findByIdAndUpdate(
+      userId,
+      { $inc: { balance: amount } },
+      { new: true }
+    );
+
+    if (!user) {
+      throw new Error("User not found");
+    }
+
+    // console.log(
+    //   `Added ${amount} to user ${userId}'s balance. New balance: ${user.balance}`
+    // );
+  } catch (error) {
+    console.error(`Error updating balance: ${error.message}`);
+    throw error;
+  }
+};
+
 const createUsers = async (req, res) => {
   try {
     const { fullName, email, password, referer } = await req.body;
     const salt = await bcrypt.genSalt();
     const hashedPassword = await bcrypt.hash(password, salt);
+
+    // Check if the referrer exists
+    let referrerUser = null;
+    if (referer) {
+      referrerUser = await userModel.findOne({ referralCode: referer });
+      if (!referrerUser) {
+        return res.status(400).json({ message: "Invalid Referrer Code" });
+      }
+    }
+
     const userExists = await userModel.findOne({ email });
     if (userExists) {
-      res.status(400).json({ message: "User Already Exists" });
-    } else {
-      if ((fullName, email, password)) {
-        try {
-          const newUser = await userModel.create({
-            fullName,
-            email,
-            password: hashedPassword,
-            referer: referer ? referer : "",
-          });
-          const token = generateJwtToken(newUser.id);
-          res.status(201).json({
-            status: "success",
-            user: {
-              fullName: newUser.fullName,
-              email: newUser.email,
-              token,
-            },
-          });
-          // req.headers = {
-          //   Authorization: `Bearer ${req.user.token}`,
-          // };
-        } catch (error) {
-          res.status(500).json(error.message);
-        }
-      } else {
-        res.status(403).json("Invalid Credentials");
+      return res.status(400).json({ message: "User Already Exists" });
+    }
+
+    try {
+      const newUser = await userModel.create({
+        fullName,
+        email,
+        password: hashedPassword,
+        referer: referer ? referer : "",
+      });
+
+      // If there's a referrer, handle the referral logic
+      if (referrerUser) {
+        // Assuming you have a function to add balance, and assuming the bonus is 200
+        const bonusAmount = 200;
+
+        // Add bonus to the referrer's balance
+        addBalance(referrerUser._id, bonusAmount);
+
+        // Add bonus to the referred user's balance
+        addBalance(newUser._id, bonusAmount);
+
+        // Log the referral for tracking or analytics
+        console.log(`User ${referrerUser._id} referred user ${newUser._id}.`);
       }
+
+      const token = generateJwtToken(newUser.id);
+      res.status(201).json({
+        status: "success",
+        user: {
+          fullName: newUser.fullName,
+          email: newUser.email,
+          token,
+        },
+      });
+    } catch (error) {
+      res.status(500).json(error.message);
     }
   } catch (error) {
     res.status(500).json(error.message);
