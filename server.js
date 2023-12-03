@@ -2,7 +2,11 @@
 const express = require("express");
 const dotenv = require("dotenv");
 const mongoose = require("mongoose");
-const { userRouter, notesRouter } = require("./routers/userRouter.js");
+const {
+  userRouter,
+  notesRouter,
+  depositRouter,
+} = require("./routers/userRouter.js");
 const cors = require("cors");
 const multer = require("multer");
 const path = require("path");
@@ -28,19 +32,7 @@ app.use(cors());
 // Define routes for user and notes
 app.use("/api/users", userRouter);
 app.use("/api/notes", notesRouter);
-
-// Set up multer storage for file uploads
-// const storage = multer.diskStorage({
-//   destination: path.join(__dirname, "uploads"),
-//   filename: function (req, file, cb) {
-//     cb(
-//       null,
-//       file.fieldname + "-" + Date.now() + path.extname(file.originalname)
-//     );
-//   },
-// });
-
-// const upload = multer({ storage: storage });
+app.use("/api/deposit", depositRouter);
 
 // Serve uploaded images statically
 app.use("/api/uploads", express.static(path.join(__dirname, "uploads")));

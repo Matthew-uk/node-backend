@@ -90,6 +90,7 @@ const createUsers = async (req, res) => {
           fullName: newUser.fullName,
           email: newUser.email,
           token,
+          userId: newUser._id,
         },
       });
     } catch (error) {
