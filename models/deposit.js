@@ -5,7 +5,7 @@ const depositSchema = mongoose.Schema(
     userId: String,
     amount: Number,
     proofOfPayment: String,
-    approved: Boolean,
+    approved: { type: Boolean, default: false },
   },
   { timestamps: true }
 );
