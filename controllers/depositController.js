@@ -23,11 +23,11 @@ const getDeposit = asyncHandler(async (req, res) => {
 });
 
 const makeDeposit = asyncHandler(async (req, res) => {
-  const { userId, amount, proofOfPayment } = await req.body;
+  const { userId, deposit, proofOfPayment } = await req.body;
   try {
     const newDeposit = await depositModel.create({
       userId,
-      amount,
+      deposit,
       proofOfPayment,
     });
     res.json(newDeposit);
