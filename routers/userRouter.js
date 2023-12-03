@@ -11,6 +11,7 @@ const {
   makeDeposit,
   getDeposits,
   getDeposit,
+  updateApproved,
 } = require("./../controllers/depositController.js");
 
 const userRouter = express.Router();
@@ -25,5 +26,6 @@ notesRouter.route("/createnote").post(createNotes);
 depositRouter.route("/").post(makeDeposit);
 depositRouter.route("/").get(getDeposits);
 depositRouter.route("/one").get(getDeposit);
+depositRouter.route("/one").patch(updateApproved);
 
 module.exports = { userRouter, notesRouter, depositRouter };
