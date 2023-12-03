@@ -3,7 +3,7 @@ const { mongoose } = require("mongoose");
 const depositSchema = mongoose.Schema(
   {
     userId: String,
-    amount: Number,
+    deposit: Number,
     proofOfPayment: String,
     approved: { type: Boolean, default: false },
   },
