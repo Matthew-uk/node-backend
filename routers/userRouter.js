@@ -10,6 +10,7 @@ const { protect } = require("../middlewares/protect.js");
 const {
   makeDeposit,
   getDeposits,
+  getDeposit,
 } = require("./../controllers/depositController.js");
 
 const userRouter = express.Router();
@@ -23,5 +24,6 @@ userRouter.route("/login").post(loginUsers);
 notesRouter.route("/createnote").post(createNotes);
 depositRouter.route("/").post(makeDeposit);
 depositRouter.route("/").get(getDeposits);
+depositRouter.route("/one").get(getDeposit);
 
 module.exports = { userRouter, notesRouter, depositRouter };
