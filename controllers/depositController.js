@@ -1,5 +1,6 @@
 const depositModel = require("./../models/deposit");
 const asyncHandler = require("express-async-handler");
+const userModel = require("./../models/userModel");
 const multer = require("multer");
 const path = require("path");
 
@@ -41,6 +42,9 @@ const updateApproved = asyncHandler(async (req, res) => {
     const id = req.query?.id; // Assuming you're passing the deposit ID in the URL parameters
 
     const deposit = await depositModel.findById(id);
+    const user = await userModel.findById(deposit.userId);
+    user.balance += deposit.deposit;
+    await user.save();
 
     if (!deposit) {
       return res.status(404).json({ message: "Deposit not found" });
