@@ -6,6 +6,7 @@ const {
   userRouter,
   notesRouter,
   depositRouter,
+  withdrawRouter,
 } = require("./routers/userRouter.js");
 const cors = require("cors");
 const multer = require("multer");
@@ -33,6 +34,7 @@ app.use(cors());
 app.use("/api/users", userRouter);
 app.use("/api/notes", notesRouter);
 app.use("/api/deposit", depositRouter);
+app.use("/api/withdraw", withdrawRouter);
 
 // Serve uploaded images statically
 app.use("/api/uploads", express.static(path.join(__dirname, "uploads")));
