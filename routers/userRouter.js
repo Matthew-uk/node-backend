@@ -4,6 +4,7 @@ const {
   loginUsers,
   getUsers,
   getAllUsers,
+  updateSubscriptionPlan,
 } = require("./../controllers/userController.js");
 const { createNotes } = require("./../controllers/goalControllers.js");
 const { protect } = require("../middlewares/protect.js");
@@ -29,6 +30,7 @@ userRouter.route("/").get(protect, getUsers);
 userRouter.route("/all").get(protect, getAllUsers);
 userRouter.route("/register").post(createUsers);
 userRouter.route("/login").post(loginUsers);
+userRouter.route("/subscription").patch(updateSubscriptionPlan);
 notesRouter.route("/createnote").post(createNotes);
 depositRouter.route("/").post(makeDeposit);
 depositRouter.route("/").get(getDeposits);

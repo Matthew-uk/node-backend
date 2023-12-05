@@ -39,6 +39,10 @@ const userSchema = mongoose.Schema(
     referer: {
       type: String,
     },
+    subscriptionPlan: {
+      type: Number,
+      default: 0,
+    },
   },
   { timestamps: true }
 );

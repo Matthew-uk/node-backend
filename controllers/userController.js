@@ -4,6 +4,7 @@ const bcrypt = require("bcrypt");
 const asyncHandler = require("express-async-handler");
 const multer = require("multer");
 const path = require("path");
+const cron = require("node-cron");
 
 const getUsers = asyncHandler(async (req, res) => {
   const { fullName, email, balance, referralCode, _id } = await req.user;
@@ -17,6 +18,91 @@ const getUsers = asyncHandler(async (req, res) => {
     });
   } catch (error) {
     res.status(404).json(error.message);
+  }
+});
+
+// const updateDailyBalances = async () => {
+//   try {
+//     // Fetch the specific user by _id
+//     const user = await userModel.findById("6569fc2545c1ee58af49eb26");
+
+//     // Check if the user exists
+//     if (!user) {
+//       console.log("User not found.");
+//       return;
+//     }
+
+//     // Adjust balance as needed
+//     user.balance += 10; // Increase balance by 10 (adjust this value)
+
+//     // Save the updated user
+//     await user.save();
+
+//     console.log("User balance updated successfully.");
+//   } catch (error) {
+//     console.error("Error updating user balance:", error);
+//   }
+// };
+
+// // Schedule the cron job to run the updateDailyBalances function every 10 seconds
+// cron.schedule("*/10 * * * * *", updateDailyBalances);
+
+const updateDailyBalances = async () => {
+  try {
+    // Fetch users subscribed to specific plans
+    const subscribedUsers = await userModel.find({
+      subscriptionPlan: { $in: [2000, 5000, 10000, 20000, 30000, 50000] },
+    });
+
+    // Update balances
+    const updatePromises = subscribedUsers.map(async (user) => {
+      // Calculate 5% of the deposit and add it to the balance
+      const bonusAmount = 0.05 * user.subscriptionPlan || 0;
+      user.balance += bonusAmount;
+
+      // Save the updated user
+      await user.save();
+    });
+
+    // Wait for all updates to complete
+    await Promise.all(updatePromises);
+
+    console.log("Daily balances updated successfully.");
+  } catch (error) {
+    console.error("Error updating daily balances:", error);
+  }
+};
+
+// Schedule the cron job to run the updateDailyBalances function every day at midnight
+cron.schedule("0 0 * * *", updateDailyBalances);
+// cron.schedule("*/10 * * * * *", updateDailyBalances);
+
+const updateSubscriptionPlan = asyncHandler(async (req, res) => {
+  const { userId, subscriptionPlan } = req.body;
+
+  try {
+    const user = await userModel.findByIdAndUpdate(
+      userId,
+      { subscriptionPlan },
+      { new: true }
+    );
+
+    if (!user) {
+      return res.status(404).json({ message: "User not found" });
+    }
+
+    res.status(200).json({
+      status: "success",
+      user: {
+        fullName: user.fullName,
+        email: user.email,
+        subscriptionPlan: user.subscriptionPlan,
+        balance: user.balance,
+        userId: user._id,
+      },
+    });
+  } catch (error) {
+    res.status(500).json({ status: "error", message: error.message });
   }
 });
 
@@ -157,18 +243,6 @@ const getAllUsers = asyncHandler(async (req, res) => {
   }
 });
 
-const imgUpload = asyncHandler(async (req, res) => {
-  const storage = multer.diskStorage({
-    destination: (req, file, cb) => {
-      cb(null, "./images");
-    },
-    filename: (req, file, cb) => {
-      const ext = path.extname(file.originalname);
-      cb(null, `${file.fieldname}-${Date.now()}${ext}`);
-    },
-  });
-});
-
 const generateJwtToken = (id) => {
   const token = jwt.sign({ id }, process.env.SECRET, {
     expiresIn: "1d",
@@ -176,4 +250,10 @@ const generateJwtToken = (id) => {
   return token;
 };
 
-module.exports = { createUsers, loginUsers, getUsers, getAllUsers, imgUpload };
+module.exports = {
+  createUsers,
+  loginUsers,
+  getUsers,
+  getAllUsers,
+  updateSubscriptionPlan,
+};
