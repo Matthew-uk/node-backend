@@ -89,6 +89,7 @@ const approveWithdrawal = asyncHandler(async (req, res) => {
 
     // Mark withdrawal as approved
     withdraw.approved = true;
+    withdraw.pending = false;
     await withdraw.save();
 
     res.json(user);
