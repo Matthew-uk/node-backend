@@ -43,6 +43,10 @@ const userSchema = mongoose.Schema(
       type: Number,
       default: 0,
     },
+    referralAmount: {
+      type: Number,
+      default: 0,
+    },
   },
   { timestamps: true }
 );

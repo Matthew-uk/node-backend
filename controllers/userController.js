@@ -7,7 +7,10 @@ const path = require("path");
 const cron = require("node-cron");
 
 const getUsers = asyncHandler(async (req, res) => {
-  const { fullName, email, balance, referralCode, _id } = await req.user;
+  const { fullName, email, balance, referralCode, _id, referralAmount } =
+    await req.user;
+  const referrals = await userModel.find({ referer: referralCode });
+
   try {
     res.status(200).json({
       fullName,
@@ -15,6 +18,8 @@ const getUsers = asyncHandler(async (req, res) => {
       balance,
       referralCode,
       id: _id,
+      referrals,
+      referralAmount,
     });
   } catch (error) {
     res.status(404).json(error.message);
@@ -51,7 +56,9 @@ const updateDailyBalances = async () => {
   try {
     // Fetch users subscribed to specific plans
     const subscribedUsers = await userModel.find({
-      subscriptionPlan: { $in: [2000, 5000, 10000, 20000, 30000, 50000] },
+      subscriptionPlan: {
+        $in: [2000, 5000, 10000, 20000, 25000, 50000, 100000, 200000, 400000],
+      },
     });
 
     // Update balances

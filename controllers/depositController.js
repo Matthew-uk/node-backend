@@ -25,12 +25,17 @@ const getDeposit = asyncHandler(async (req, res) => {
 
 const makeDeposit = asyncHandler(async (req, res) => {
   const { userId, deposit, proofOfPayment } = await req.body;
+  const currentUser = await userModel.findOne({ _id: userId });
+  const referrer = await userModel.findOne({
+    referralCode: currentUser.referer,
+  });
   try {
     const newDeposit = await depositModel.create({
       userId,
       deposit,
       proofOfPayment,
     });
+    console.log(referrer);
     res.json(newDeposit);
   } catch (error) {
     res.status(404).json(error.message);
@@ -42,18 +47,43 @@ const updateApproved = asyncHandler(async (req, res) => {
     const id = req.query?.id; // Assuming you're passing the deposit ID in the URL parameters
 
     const deposit = await depositModel.findById(id);
-    const user = await userModel.findById(deposit.userId);
-    user.balance += deposit.deposit;
-    await user.save();
 
     if (!deposit) {
       return res.status(404).json({ message: "Deposit not found" });
     }
 
+    const user = await userModel.findById(deposit.userId);
+
+    if (!user) {
+      return res.status(404).json({ message: "User not found" });
+    }
+
+    user.balance += deposit.deposit;
+    await user.save();
+
+    const REFERRAL_PERCENTAGE = 0.18;
+    let referer = null; // Declare referer outside the if block
+
+    if (user.referer) {
+      referer = await userModel.findOneAndUpdate(
+        { referralCode: user.referer },
+        { $inc: { referralAmount: REFERRAL_PERCENTAGE * deposit.deposit } },
+        { new: true }
+      );
+
+      if (referer) {
+        referer.balance += REFERRAL_PERCENTAGE * deposit.deposit;
+        await referer.save();
+        console.log(referer);
+      } else {
+        console.log("Referrer not found.");
+      }
+    }
+
     deposit.approved = true;
     await deposit.save();
 
-    res.json(deposit);
+    res.json({ deposit, referer });
   } catch (error) {
     res.status(500).json(error.message);
   }
