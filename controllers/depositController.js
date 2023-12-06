@@ -3,11 +3,22 @@ const asyncHandler = require("express-async-handler");
 const userModel = require("./../models/userModel");
 const multer = require("multer");
 const path = require("path");
+const deposit = require("./../models/deposit");
 
 const getDeposits = asyncHandler(async (req, res) => {
   try {
     const deposits = await depositModel.find();
     res.json(deposits);
+  } catch (error) {
+    res.status(404).json(error.message);
+  }
+});
+
+const getUserDeposit = asyncHandler(async (req, res) => {
+  try {
+    const id = req.query?.id;
+    const userDeposit = await deposit.find({ userId: id });
+    res.json(userDeposit);
   } catch (error) {
     res.status(404).json(error.message);
   }
@@ -89,4 +100,10 @@ const updateApproved = asyncHandler(async (req, res) => {
   }
 });
 
-module.exports = { makeDeposit, getDeposits, getDeposit, updateApproved };
+module.exports = {
+  makeDeposit,
+  getDeposits,
+  getDeposit,
+  updateApproved,
+  getUserDeposit,
+};

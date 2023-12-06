@@ -23,6 +23,16 @@ const getWithdrawal = asyncHandler(async (req, res) => {
   }
 });
 
+const getUserWithdrawal = asyncHandler(async (req, res) => {
+  try {
+    const id = req.query?.id;
+    const userWithdraw = await withdrawModel.find({ userId: id });
+    res.json(userWithdraw);
+  } catch (error) {
+    res.status(404).json(error.message);
+  }
+});
+
 const makeWithdrawal = asyncHandler(async (req, res) => {
   const { userId, withdraw, bankName, accountNumber, accountName } =
     await req.body;
@@ -93,4 +103,5 @@ module.exports = {
   getWithdrawals,
   getWithdrawal,
   approveWithdrawal,
+  getUserWithdrawal,
 };

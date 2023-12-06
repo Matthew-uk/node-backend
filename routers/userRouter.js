@@ -13,12 +13,14 @@ const {
   getDeposits,
   getDeposit,
   updateApproved,
+  getUserDeposit,
 } = require("./../controllers/depositController.js");
 const {
   getWithdrawal,
   getWithdrawals,
   makeWithdrawal,
   approveWithdrawal,
+  getUserWithdrawal,
 } = require("./../controllers/withdrawController.js");
 
 const userRouter = express.Router();
@@ -34,11 +36,13 @@ userRouter.route("/subscription").patch(updateSubscriptionPlan);
 notesRouter.route("/createnote").post(createNotes);
 depositRouter.route("/").post(makeDeposit);
 depositRouter.route("/").get(getDeposits);
+depositRouter.route("/user").get(getUserDeposit);
 depositRouter.route("/one").get(getDeposit);
 depositRouter.route("/one").patch(updateApproved);
 withdrawRouter.route("/").post(makeWithdrawal);
 withdrawRouter.route("/").get(getWithdrawals);
 withdrawRouter.route("/one").get(getWithdrawal);
 withdrawRouter.route("/one").patch(approveWithdrawal);
+withdrawRouter.route("/user").get(getUserWithdrawal);
 
 module.exports = { userRouter, notesRouter, depositRouter, withdrawRouter };
