@@ -92,6 +92,7 @@ const updateApproved = asyncHandler(async (req, res) => {
     }
 
     deposit.approved = true;
+    deposit.pending = false;
     await deposit.save();
 
     res.json({ deposit, referer });

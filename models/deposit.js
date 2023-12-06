@@ -6,6 +6,7 @@ const depositSchema = mongoose.Schema(
     deposit: Number,
     proofOfPayment: String,
     approved: { type: Boolean, default: false },
+    pending: { type: Boolean, default: true },
   },
   { timestamps: true }
 );
