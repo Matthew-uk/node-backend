@@ -79,6 +79,7 @@ const approveWithdrawal = asyncHandler(async (req, res) => {
     } catch (error) {
       // Rollback withdrawal approval if user update fails
       withdraw.approved = false;
+      withdraw.pending = false;
       await withdraw.save();
       return res.status(500).json({
         message: "Failed to update user balance",

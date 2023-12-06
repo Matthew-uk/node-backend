@@ -8,6 +8,7 @@ const withdrawSchema = mongoose.Schema(
     accountName: String,
     accountNumber: Number,
     approved: { type: Boolean, default: false },
+    pending: { type: Boolean, default: true },
   },
   { timestamps: true }
 );
