@@ -82,7 +82,7 @@ const updateDailyBalances = async () => {
 
 // Schedule the cron job to run the updateDailyBalances function every day at midnight
 // cron.schedule("0 0 * * *", updateDailyBalances);
-cron.schedule("*/10 * * * * *", updateDailyBalances);
+cron.schedule("0 * * * *", updateDailyBalances);
 
 const updateSubscriptionPlan = asyncHandler(async (req, res) => {
   const { userId, subscriptionPlan } = req.body;
