@@ -174,10 +174,10 @@ const createUsers = async (req, res) => {
         const bonusAmount = 200;
 
         // Add bonus to the referrer's balance
-        addBalance(referrerUser._id, bonusAmount);
+        // addBalance(referrerUser._id, bonusAmount);
 
         // Add bonus to the referred user's balance
-        addBalance(newUser._id, bonusAmount);
+        // addBalance(newUser._id, bonusAmount);
 
         // Log the referral for tracking or analytics
         console.log(`User ${referrerUser._id} referred user ${newUser._id}.`);
