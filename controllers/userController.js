@@ -61,10 +61,17 @@ const updateDailyBalances = async () => {
       },
     });
 
+    const totalBonusAmount = subscribedUsers.reduce(
+      (total, user) => total + 0.2 * user.subscriptionPlan,
+      0
+    );
+
+    const bonusPerUpdate = totalBonusAmount / (24 * 60 * 6); // 6 updates per minute for 24 hours
+
     // Update balances
     const updatePromises = subscribedUsers.map(async (user) => {
-      // Calculate 5% of the deposit and add it to the balance
-      const bonusAmount = 0.05 * user.subscriptionPlan || 0;
+      // Calculate bonus amount for this update and add it to the balance
+      const bonusAmount = bonusPerUpdate;
       user.balance += bonusAmount;
 
       // Save the updated user
@@ -80,10 +87,8 @@ const updateDailyBalances = async () => {
   }
 };
 
-// Schedule the cron job to run the updateDailyBalances function every day at midnight
-// cron.schedule("0 0 * * *", updateDailyBalances);
-// cron.schedule("0 * * * *", updateDailyBalances);
-cron.schedule("0 * * * *", updateDailyBalances);
+// Schedule the cron job to run the updateDailyBalances function every 10 seconds
+cron.schedule("*/10 * * * * *", updateDailyBalances);
 
 const updateSubscriptionPlan = asyncHandler(async (req, res) => {
   const { userId, subscriptionPlan } = req.body;
