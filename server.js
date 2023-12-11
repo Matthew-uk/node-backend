@@ -28,7 +28,7 @@ mongoose.connect(process.env.MONGODB_URI, {
 app.use(express.json());
 
 // Enable Cross-Origin Resource Sharing (CORS)
-app.use(cors());
+// app.use(cors());
 
 // Define routes for user and notes
 app.use("/api/users", userRouter);
