@@ -29,6 +29,15 @@ app.use(express.json());
 
 // Enable Cross-Origin Resource Sharing (CORS)
 // app.use(cors());
+const allowedOrigins = ["http://localhost:3000", "https://twinkas.vercel.app/"];
+
+app.use(
+  cors({
+    origin: allowedOrigins,
+    methods: "GET,HEAD,PUT,PATCH,POST,DELETE",
+    credentials: true,
+  })
+);
 
 // Define routes for user and notes
 app.use("/api/users", userRouter);
