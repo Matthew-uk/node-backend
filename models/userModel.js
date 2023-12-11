@@ -49,7 +49,7 @@ const userSchema = mongoose.Schema(
     },
     referrals: [
       {
-        type: mongoose.Schema.Types.ObjectId,
+        type: Object,
         ref: "Users",
       },
     ],
@@ -58,9 +58,19 @@ const userSchema = mongoose.Schema(
 );
 
 // Middleware to generate referral code before saving the document
-userSchema.pre("save", function (next) {
+userSchema.pre("save", async function (next) {
   if (!this.referralCode) {
     this.referralCode = generateReferralCode();
+  }
+  // If the user is new or the referrals array is empty, set it based on existing relationships
+  if (!this.referrals || this.referrals.length === 0) {
+    // Assuming `referer` holds the referralCode of the referring user
+    const referringUser = await this.model("Users").findOne({
+      referralCode: this.referer,
+    });
+
+    // Set the referrals field with the referring user's object
+    this.referrals = referringUser ? [referringUser] : [];
   }
   next();
 });
