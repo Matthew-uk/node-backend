@@ -7,8 +7,15 @@ const path = require("path");
 const cron = require("node-cron");
 
 const getUsers = asyncHandler(async (req, res) => {
-  const { fullName, email, balance, referralCode, _id, referralAmount } =
-    await req.user;
+  const {
+    fullName,
+    email,
+    balance,
+    referralCode,
+    _id,
+    referralAmount,
+    subscriptionPlan,
+  } = await req.user;
   const referrals = await userModel.find({ referer: referralCode });
 
   try {
@@ -20,6 +27,7 @@ const getUsers = asyncHandler(async (req, res) => {
       id: _id,
       referrals,
       referralAmount,
+      subscriptionPlan,
     });
   } catch (error) {
     res.status(404).json(error.message);
