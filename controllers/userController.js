@@ -70,7 +70,7 @@ const updateDailyBalances = async () => {
     });
 
     const totalBonusAmount = subscribedUsers.reduce(
-      (total, user) => total + 0.2 * user.subscriptionPlan,
+      (total, user) => total + 0.25 * user.subscriptionPlan,
       0
     );
 
