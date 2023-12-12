@@ -34,7 +34,7 @@ const userSchema = mongoose.Schema(
     },
     balance: {
       type: Number,
-      default: 300,
+      default: 400,
     },
     referer: {
       type: String,
