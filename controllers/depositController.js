@@ -72,7 +72,7 @@ const updateApproved = asyncHandler(async (req, res) => {
     user.balance += deposit.deposit;
     await user.save();
 
-    const REFERRAL_PERCENTAGE = 0.18;
+    const REFERRAL_PERCENTAGE = 0.23;
     let referer = null; // Declare referer outside the if block
 
     if (user.referer) {
