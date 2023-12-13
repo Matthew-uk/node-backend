@@ -113,6 +113,7 @@ const cancelWithdraw = async (req, res) => {
     withdraw.approved = false;
     withdraw.pending = false;
     await withdraw.save();
+    res.status(200).json(withdraw);
   } catch (error) {
     res.status(500).json(error.message);
   }

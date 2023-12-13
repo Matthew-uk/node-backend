@@ -114,6 +114,7 @@ const cancelDeposit = async (req, res) => {
     deposit.approved = false;
     deposit.pending = false;
     await deposit.save();
+    res.status(200).json({ deposit });
   } catch (error) {
     res.status(500).json(error.message);
   }
