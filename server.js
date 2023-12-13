@@ -33,6 +33,7 @@ const allowedOrigins = [
   "http://localhost:3002",
   "http://localhost:3000",
   "https://twinkas.vercel.app",
+  "https://ecommerce-admin-dashboard-v1.vercel.app/",
 ];
 
 app.use(
