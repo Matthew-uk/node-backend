@@ -30,10 +30,9 @@ app.use(express.json());
 // Enable Cross-Origin Resource Sharing (CORS)
 // app.use(cors());
 const allowedOrigins = [
-  "http://localhost:3002",
+  "https://ecommerce-admin-dashboard-v1.vercel.app/",
   "http://localhost:3000",
   "https://twinkas.vercel.app",
-  "https://ecommerce-admin-dashboard-v1.vercel.app/",
 ];
 
 app.use(
