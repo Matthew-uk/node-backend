@@ -101,10 +101,29 @@ const updateApproved = asyncHandler(async (req, res) => {
   }
 });
 
+const cancelDeposit = async (req, res) => {
+  try {
+    const id = req.query?.id; // Assuming you're passing the deposit ID in the URL parameters
+
+    const deposit = await depositModel.findById(id);
+
+    if (!deposit) {
+      return res.status(404).json({ message: "Deposit not found" });
+    }
+
+    deposit.approved = false;
+    deposit.pending = false;
+    await deposit.save();
+  } catch (error) {
+    res.status(500).json(error.message);
+  }
+};
+
 module.exports = {
   makeDeposit,
   getDeposits,
   getDeposit,
   updateApproved,
   getUserDeposit,
+  cancelDeposit,
 };

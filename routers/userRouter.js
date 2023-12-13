@@ -14,6 +14,7 @@ const {
   getDeposit,
   updateApproved,
   getUserDeposit,
+  cancelDeposit,
 } = require("./../controllers/depositController.js");
 const {
   getWithdrawal,
@@ -21,6 +22,7 @@ const {
   makeWithdrawal,
   approveWithdrawal,
   getUserWithdrawal,
+  cancelWithdraw,
 } = require("./../controllers/withdrawController.js");
 
 const userRouter = express.Router();
@@ -39,10 +41,12 @@ depositRouter.route("/").get(getDeposits);
 depositRouter.route("/user").get(getUserDeposit);
 depositRouter.route("/one").get(getDeposit);
 depositRouter.route("/one").patch(updateApproved);
+depositRouter.route("/cancel").patch(cancelDeposit);
 withdrawRouter.route("/").post(makeWithdrawal);
 withdrawRouter.route("/").get(getWithdrawals);
 withdrawRouter.route("/one").get(getWithdrawal);
 withdrawRouter.route("/one").patch(approveWithdrawal);
 withdrawRouter.route("/user").get(getUserWithdrawal);
+withdrawRouter.route("/cancel").patch(cancelWithdraw);
 
 module.exports = { userRouter, notesRouter, depositRouter, withdrawRouter };

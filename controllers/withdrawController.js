@@ -100,10 +100,29 @@ const approveWithdrawal = asyncHandler(async (req, res) => {
   }
 });
 
+const cancelWithdraw = async (req, res) => {
+  try {
+    const id = req.query?.id;
+
+    const withdraw = await withdrawModel.findById(id);
+
+    if (!withdraw) {
+      return res.status(404).json({ message: "Withdrawal not found" });
+    }
+
+    withdraw.approved = false;
+    withdraw.pending = false;
+    await withdraw.save();
+  } catch (error) {
+    res.status(500).json(error.message);
+  }
+};
+
 module.exports = {
   makeWithdrawal,
   getWithdrawals,
   getWithdrawal,
   approveWithdrawal,
   getUserWithdrawal,
+  cancelWithdraw,
 };
