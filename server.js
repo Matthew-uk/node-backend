@@ -32,7 +32,7 @@ app.use(express.json());
 const allowedOrigins = [
   "https://ecommerce-admin-dashboard-v1.vercel.app",
   "http://localhost:3000",
-  "https://twinkas.vercel.app",
+  "https://sobaz.vercel.app/",
 ];
 
 app.use(
