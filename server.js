@@ -35,22 +35,16 @@ const allowedOrigins = [
   "https://sobaz.vercel.app/",
 ];
 
-app.use(
-  cors({
-    origin: allowedOrigins,
+const corsOptionsDelegate = function (req, callback) {
+  const corsOptions = {
+    origin: allowedOrigins.includes(req.header("Origin")),
     methods: "GET,HEAD,PUT,PATCH,POST,DELETE",
     credentials: true,
-  })
-);
+  };
+  callback(null, corsOptions);
+};
 
-app.options(
-  "*",
-  cors({
-    origin: allowedOrigins,
-    methods: "GET,HEAD,PUT,PATCH,POST,DELETE",
-    credentials: true,
-  })
-);
+app.use(cors(corsOptionsDelegate));
 
 // Define routes for user and notes
 app.use("/api/users", userRouter);
