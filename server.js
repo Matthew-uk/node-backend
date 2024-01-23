@@ -43,6 +43,15 @@ app.use(
   })
 );
 
+app.options(
+  "*",
+  cors({
+    origin: allowedOrigins,
+    methods: "GET,HEAD,PUT,PATCH,POST,DELETE",
+    credentials: true,
+  })
+);
+
 // Define routes for user and notes
 app.use("/api/users", userRouter);
 app.use("/api/notes", notesRouter);
