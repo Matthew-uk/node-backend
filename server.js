@@ -29,22 +29,22 @@ app.use(express.json());
 
 // Enable Cross-Origin Resource Sharing (CORS)
 // app.use(cors());
-const allowedOrigins = [
-  "https://ecommerce-admin-dashboard-v1.vercel.app",
-  "http://localhost:3000",
-  "https://sobaz.vercel.app/",
-];
+// const allowedOrigins = [
+//   "https://ecommerce-admin-dashboard-v1.vercel.app",
+//   "http://localhost:3000",
+//   "https://sobaz.vercel.app/",
+// ];
 
-const corsOptionsDelegate = function (req, callback) {
-  const corsOptions = {
-    origin: allowedOrigins.includes(req.header("Origin")),
-    methods: "GET,HEAD,PUT,PATCH,POST,DELETE",
-    credentials: true,
-  };
-  callback(null, corsOptions);
-};
+// const corsOptionsDelegate = function (req, callback) {
+//   const corsOptions = {
+//     origin: allowedOrigins.includes(req.header("Origin")),
+//     methods: "GET,HEAD,PUT,PATCH,POST,DELETE",
+//     credentials: true,
+//   };
+//   callback(null, corsOptions);
+// };
 
-app.use(cors(corsOptionsDelegate));
+app.use(cors());
 
 // Define routes for user and notes
 app.use("/api/users", userRouter);
